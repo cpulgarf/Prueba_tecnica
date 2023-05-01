@@ -12,7 +12,7 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 
-data = pd.read_csv("/vehicle_gps.csv")
+data = pd.read_csv("/content/vehicle_gps.csv")
 
 data.head()
 
@@ -136,6 +136,21 @@ nx.draw_networkx(G,pos, node_size = 5, with_labels = False)
 nx.draw_networkx_edge_labels(G,pos,edge_labels=labels)
 nx.draw(G,pos = pos, node_size = 5, node_color = 'red' , node_shape="s")
 
+"""# Tiempos de cada viaje (por cada tipo de vehículo)"""
+
+t = data2[['vehicle', 'time_diff']]
+vehiculos = ['A','B','C','D']
+tiempo = []
+for v in vehiculos:
+  edge = t[t['vehicle'] == v].reset_index(drop = True)
+  pesos = edge['time_diff'].tolist()
+  pesos.pop(0)
+  tiempo.append([v,sum(pesos)])
+
+
+for t in tiempo:
+  print('El viaje del vehículo ' + t[0] + ' es de ' + str(t[1]) + ' segundos')
+
 """# Función para calcular el tiempo entre dos nodos."""
 
 #Se añaden dos arcos, entre 2 caminos que comparten un nodo en común (Camino B y C)
@@ -149,7 +164,7 @@ def get_time(G,i ,f):
   try:
     tiempo = nx.shortest_path_length(G, i,f , weight = 'weight')
     nodos = nx.shortest_path(G, i,f , weight = 'weight')
-    print('El tiempo total de viaje es: ' + str(tiempo))
+    print('El tiempo total de viaje es: ' + str(tiempo) + ' segundos')
     print('Los nodos seleccionados son: ' + str(nodos))
     
     plt.figure(figsize=(8,5))
